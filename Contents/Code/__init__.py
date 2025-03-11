@@ -338,7 +338,7 @@ def test_ta_connection():
         response = json.loads(
             read_url(
                 Request(
-                    "{}/api/ping".format(TA_CONFIG["ta_url"]),
+                    "{}/api/ping/".format(TA_CONFIG["ta_url"]),
                     headers={
                         "Authorization": "Token {}".format(
                             TA_CONFIG["ta_api_key"]
