@@ -453,7 +453,7 @@ def get_ta_video_metadata(ytid):
                 Log.debug(
                     "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
                 )
-                vid_response["data"] = vid_response
+                vid_response = vid_response["data"]
             metadata = {}
             metadata["show"] = "{} [{}]".format(
                 vid_response["channel"]["channel_name"],
@@ -523,7 +523,7 @@ def get_ta_channel_metadata(chid):
                 Log.debug(
                     "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
                 )
-                ch_response["data"] = ch_response
+                ch_response = ch_response["data"]
             metadata = {}
             metadata["show"] = "{} [{}]".format(
                 ch_response["channel_name"],
