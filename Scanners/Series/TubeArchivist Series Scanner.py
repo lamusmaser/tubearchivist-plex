@@ -381,6 +381,8 @@ def test_ta_connection(try_legacy_api=False):
             "HTTP Error connecting to TubeArchivist with URL '%s', HTTPError: '%s'"  # noqa: E501
             % (TA_CONFIG["ta_url"], e)
         )
+        if try_legacy_api:
+            return False, []
         Log.debug(  # type: ignore # noqa: F821
             "Attempting with legacy API for ping response."
         )
