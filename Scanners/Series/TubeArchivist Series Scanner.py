@@ -577,9 +577,10 @@ def Scan(path, files, mediaList, subdirs):  # noqa: C901
                                 episode = video_metadata["episode"]
                             except Exception as e:
                                 Log.error(
-                                    "Issue with setting metadata from video using response metadata: '%s', Exception: '%s'"  # noqa: E501
+                                    "Issue with fetching or setting metadata from video using response metadata: '%s', Exception: '%s'"  # noqa: E501
                                     % (str(video_metadata), e)
                                 )
+                                continue
                         else:
                             Log.error(
                                 "TubeArchivist instance is not accessible or not online. Unable to process video file."  # noqa: E501
