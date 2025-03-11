@@ -240,10 +240,11 @@ def load_ta_config():
         TA_CONFIG = get_ta_config()
 
 
-def get_ta_config():
+def read_ta_config():
     SCANNER_LOCATION = "Scanners/Series/"
     CONFIG_NAME = "ta_config.json"
     response = {}
+
     config_file = os.path.join(PLEX_ROOT, SCANNER_LOCATION, CONFIG_NAME)
     try:
         response = json.loads(
@@ -283,6 +284,12 @@ def get_ta_config():
                     config_file
                 )
             )
+    return response
+
+
+def get_ta_config():
+    response = {}
+    response = read_ta_config()
     for key in ["ta_url", "ta_api_key"]:
         if key not in response:
             Log.error("Configuration is missing key '{}'.".format(key))
@@ -291,6 +298,8 @@ def get_ta_config():
         and response["ta_url"].find("://") == -1
     ):
         response["ta_url"] = "http://" + response["ta_url"]
+    if response["ta_url"].endswith("/"):
+        response["ta_url"] = response["ta_url"][:-1]
     Log.debug("TA URL: %s" % (response["ta_url"]))
     return response
 
