@@ -468,7 +468,7 @@ def get_ta_video_metadata(ytid):
         )
         if vid_response:
             if TA_CONFIG["version"] < [0, 5, 0]:
-                vid_response["data"] = vid_response
+                vid_response = vid_response["data"]
             metadata = {}
             if Prefs["show_channel_id"]:  # type: ignore # noqa: F821
                 metadata["show"] = "{} [{}]".format(
@@ -507,7 +507,7 @@ def get_ta_video_metadata(ytid):
             )
     except Exception as e:
         Log.Error(  # type: ignore # noqa: F821
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
@@ -530,7 +530,7 @@ def get_ta_channel_metadata(chid):
         )
         if ch_response:
             if TA_CONFIG["version"] < [0, 5, 0]:
-                ch_response["data"] = ch_response
+                ch_response = ch_response["data"]
             metadata = {}
             if Prefs["show_channel_id"]:  # type: ignore # noqa: F821
                 metadata["show"] = "{} [{}]".format(
@@ -558,7 +558,7 @@ def get_ta_channel_metadata(chid):
             )
     except Exception as e:
         Log.Error(  # type: ignore # noqa: F821
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
