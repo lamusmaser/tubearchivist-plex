@@ -288,7 +288,7 @@ def load_ta_config():
     global TA_CONFIG
     if TA_CONFIG:
         TA_CONFIG["online"], TA_CONFIG["version"] = test_ta_connection()
-        return
+        return TA_CONFIG
     else:
         Log.Info(  # type: ignore # noqa: F821
             "Loading TubeArchivist configurations from Plex Agent configuration."  # noqa: E501
@@ -328,11 +328,12 @@ def get_ta_config():
 
 def test_ta_connection(try_legacy_api=False):
     if not TA_CONFIG:
-        return
+        return False, []
     try:
         Log.Info(  # type: ignore # noqa: F821
-            "Attempting to connect to TubeArchivist at {} with provided token from `ta_config.json` file to test connection and poll version details.".format(  # noqa: E501
-                TA_CONFIG["ta_url"]
+            "Attempting{} to connect to TubeArchivist at {} with provided token from `ta_config.json` file to test connection and poll version details.".format(  # noqa: E501
+                " legacy endpoint" if try_legacy_api else "",
+                TA_CONFIG["ta_url"],
             )
         )
         ping_url = "{}/api/ping/".format(TA_CONFIG["ta_url"])
@@ -422,7 +423,7 @@ def get_ta_metadata(id, mtype="video"):
     request_url = ""
     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     if not TA_CONFIG:
-        return
+        return {}
     try:
         Log.Info(  # type: ignore # noqa: F821
             "Attempting to connect to TubeArchivist to lookup YouTube {}: {}".format(  # noqa: E501
@@ -455,10 +456,10 @@ def get_ta_video_metadata(ytid):
     mtype = "video"
     if not TA_CONFIG:
         Log.Error("No configurations in TA_CONFIG.")  # type: ignore # noqa: F821, E501
-        return
+        return {}
     if not ytid:
         Log.Error("No {} ID present.".format(mtype))  # type: ignore # noqa: F821, E501
-        return
+        return {}
     try:
         vid_response = get_ta_metadata(ytid)
         Log.Info(  # type: ignore # noqa: F821
@@ -517,10 +518,10 @@ def get_ta_channel_metadata(chid):
     mtype = "channel"
     if not TA_CONFIG:
         Log.Error("No configurations in TA_CONFIG.")  # type: ignore # noqa: F821, E501
-        return
+        return {}
     if not chid:
         Log.Error("No {} ID present.".format(mtype))  # type: ignore # noqa: F821, E501
-        return
+        return {}
     try:
         ch_response = get_ta_metadata(chid, mtype="channel")
         Log.Info(  # type: ignore # noqa: F821
@@ -769,7 +770,7 @@ def Search(results, media, lang, manual):
                     displayname, filename
                 )
             )
-            return
+            return 1
         else:
             Log.Error(  # type: ignore # noqa: F821
                 "TubeArchivist ID not found - Display Name: {} | File: {}".format(  # noqa: E501
@@ -817,7 +818,7 @@ def Update(metadata, media, lang, force):  # noqa: C901
                     channel_id, ch_metadata
                 )
             )
-            return
+            return 0
     else:
         channel_title = metadata.title
 
@@ -1044,6 +1045,13 @@ def Update(metadata, media, lang, force):  # noqa: C901
         Log.Info(  # type: ignore # noqa: F821
             "=== End Of Agent's Update Call, errors after this are Plex related ==="  # noqa: E501
         )
+
+
+def ValidatePrefs():
+    if Prefs:  # type: ignore # noqa: F821
+        return True
+    else:
+        return False
 
 
 class TubeArchivistYTSeriesAgent(Agent.TV_Shows):  # type: ignore # noqa: F821
