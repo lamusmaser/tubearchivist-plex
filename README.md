@@ -99,5 +99,10 @@ Agent Log Location: `Plex Media Server/Logs/PMS Plugin Logs/com.plexapp.agents.t
 # Issues
 If you are still having an issue, either open an Issue in GitHub or a Support Case on the Discord, specifying that it is related to the Plex integration.
 
+# User Scripts/References
+This is a list of useful user scripts created by other users like you to extend this project and its functionality. Make sure to check the respective repository links for detailed license information.
+
+Filesystem Monitor/Partial Library Updater Script by @samssausages: [samssausages/plex_scripts](https://github.com/samssausages/plex_scripts/tree/main)
+
 # Special Thanks and Reference
 This project is heavily influenced by the works of ZeroQI, JordyAlkema, and BeefTornado, as well as the Plex Media Server's official scanners and agents.
