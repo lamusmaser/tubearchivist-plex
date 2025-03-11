@@ -124,7 +124,6 @@ Make sure the path is unicode, if it is not, decode using OS filesystem's encodi
 """
 Expanded after issues with non-unicode paths in an ASCII environment.
 Example channels for testing:
-    https://www.youtube.com/c/m%C3%BCnecat
     https://www.youtube.com/@gesunokiwamiotome
     https://www.youtube.com/@BaobeiChinese
     https://www.youtube.com/@yueerjiejie
