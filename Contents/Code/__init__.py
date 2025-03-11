@@ -194,16 +194,25 @@ def read_url(url, data=None):
         Log.Error(  # type: ignore # noqa: F821
             "Error reading or accessing url '%s', Exception: '%s'"
             % (
-                (
-                    url.get_full_url()
-                    if (type(url) is Request)
-                    or (type(url) is urllib.request.Request)  # type: ignore # noqa: F821, E501
-                    else url
-                ),
+                get_url(url),
                 e,
             )
         )
         raise e
+
+
+def get_url(url):
+    try:
+        return url.get_full_url()
+    except Exception as e:
+        Log.Error(  # type: ignore # noqa: F821
+            "URL handler for '%s' does not have `.get_full_url()` function, Exception: '%s'"  # noqa: E501
+            % (url, e)
+        )
+        Log.Debug(  # type: ignore # noqa: F821
+            "Using fallback method for URL response."
+        )
+        return url
 
 
 def read_file(localfile):
