@@ -496,9 +496,9 @@ def get_ta_channel_metadata(chid):
                 ch_response["data"]["channel_last_refresh"]
             )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
-            metadata["description"] = "YouTube ID: {}\n\n{}".format(
-                ch_response["data"]["channel_id"],
+            metadata["description"] = "{}\n\nYouTube ID: {}".format(
                 ch_response["data"]["channel_description"],
+                ch_response["data"]["channel_id"],
             )
             metadata["banner_url"] = ch_response["data"]["channel_banner_url"]
             metadata["thumb_url"] = ch_response["data"]["channel_thumb_url"]
