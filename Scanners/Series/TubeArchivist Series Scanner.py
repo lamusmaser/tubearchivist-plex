@@ -431,40 +431,40 @@ def get_ta_video_metadata(ytid):
             )
         )
         if vid_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                vid_response["data"] = vid_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
-                vid_response["data"]["channel"]["channel_name"],
-                vid_response["data"]["channel"]["channel_id"],
+                vid_response["channel"]["channel_name"],
+                vid_response["channel"]["channel_id"],
             )
-            metadata["ytid"] = vid_response["data"]["youtube_id"]
-            metadata["title"] = vid_response["data"]["title"]
+            metadata["ytid"] = vid_response["youtube_id"]
+            metadata["title"] = vid_response["title"]
             if TA_CONFIG["version"] < [0, 3, 7]:
                 metadata["processed_date"] = datetime.datetime.strptime(
-                    vid_response["data"]["published"], "%d %b, %Y"
+                    vid_response["published"], "%d %b, %Y"
                 )
                 video_refresh = datetime.datetime.strptime(
-                    vid_response["data"]["vid_last_refresh"], "%d %b, %Y"
+                    vid_response["vid_last_refresh"], "%d %b, %Y"
                 )
             else:
                 metadata["processed_date"] = datetime.datetime.strptime(
-                    vid_response["data"]["published"], "%Y-%m-%d"
+                    vid_response["published"], "%Y-%m-%d"
                 )
                 video_refresh = datetime.datetime.strptime(
-                    vid_response["data"]["vid_last_refresh"], "%Y-%m-%d"
+                    vid_response["vid_last_refresh"], "%Y-%m-%d"
                 )
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
             metadata["season"] = metadata["processed_date"].year
             metadata["episode"] = metadata["processed_date"].strftime("%Y%m%d")
-            metadata["description"] = vid_response["data"]["description"]
-            metadata["thumb_url"] = vid_response["data"]["vid_thumb_url"]
-            metadata["type"] = vid_response["data"]["vid_type"]
+            metadata["description"] = vid_response["description"]
+            metadata["thumb_url"] = vid_response["vid_thumb_url"]
+            metadata["type"] = vid_response["vid_type"]
             metadata["has_subtitles"] = (
-                True if "subtitles" in vid_response["data"] else False
+                True if "subtitles" in vid_response else False
             )
             if metadata["has_subtitles"]:
-                metadata["subtitle_metadata"] = vid_response["data"][
-                    "subtitles"
-                ]
+                metadata["subtitle_metadata"] = vid_response["subtitles"]
             return metadata
         else:
             Log.error(
