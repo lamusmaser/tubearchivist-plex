@@ -434,6 +434,9 @@ def get_ta_video_metadata(ytid):
         )
         if vid_response:
             if TA_CONFIG["version"] < [0, 5, 0]:
+                Log.debug(
+                    "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
+                )
                 vid_response["data"] = vid_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
@@ -443,6 +446,9 @@ def get_ta_video_metadata(ytid):
             metadata["ytid"] = vid_response["youtube_id"]
             metadata["title"] = vid_response["title"]
             if TA_CONFIG["version"] < [0, 3, 7]:
+                Log.debug(
+                    "Processing response with initial TA API response format."
+                )
                 metadata["processed_date"] = datetime.datetime.strptime(
                     vid_response["published"], "%d %b, %Y"
                 )
@@ -498,6 +504,9 @@ def get_ta_channel_metadata(chid):
         )
         if ch_response:
             if TA_CONFIG["version"] < [0, 5, 0]:
+                Log.debug(
+                    "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
+                )
                 ch_response["data"] = ch_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
@@ -505,6 +514,9 @@ def get_ta_channel_metadata(chid):
                 ch_response["channel_id"],
             )
             if TA_CONFIG["version"] < [0, 3, 7]:
+                Log.debug(
+                    "Processing response with initial TA API response format."
+                )
                 channel_refresh = datetime.datetime.strptime(
                     ch_response["channel_last_refresh"], "%d %b, %Y"
                 )
