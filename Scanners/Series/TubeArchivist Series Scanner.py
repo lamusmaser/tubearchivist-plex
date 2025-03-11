@@ -636,13 +636,14 @@ def Scan(path, files, mediaList, subdirs):  # noqa: C901
                                 episode, title, show, season
                             )
                         )
-
-                        tv_show.released_at = str(
-                            "{}-{}-{}".format(
-                                str(episode)[:3],
-                                str(episode)[4:5],
-                                str(episode)[6:7],
-                            )
+                        episode_split = [
+                            str(episode[i : i + 2])  # noqa: E203
+                            for i in range(0, len(episode), 2)
+                        ]
+                        tv_show.released_at = "{}-{}-{}".format(
+                            episode_split[0],
+                            episode_split[1],
+                            episode_split[2],
                         ).encode("UTF-8")
                         tv_show.parts.append(i)
                         Log.info(
