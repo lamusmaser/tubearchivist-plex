@@ -381,7 +381,7 @@ def test_ta_connection():
 
 def get_ta_metadata(id, mtype="video"):
     request_url = ""
-    # Currently, the API endpoint is identical. However, we should have this here for a future version in case the API changes.
+    # Currently, the API endpoint is identical. However, we should have this here for a future version in case the API changes.  # noqa: E501
     # if TA_CONFIG["version"] < [0, 5, 0]:
     #     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     # else:
