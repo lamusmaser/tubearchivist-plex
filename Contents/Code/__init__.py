@@ -255,6 +255,8 @@ def load_ta_config():
                 and TA_CONFIG["ta_url"].find("://") == -1
             ):
                 TA_CONFIG["ta_url"] = "http://" + TA_CONFIG["ta_url"]
+            if TA_CONFIG["ta_url"].endswith("/"):
+                TA_CONFIG["ta_url"] = TA_CONFIG["ta_url"][:-1]
         Log.Debug("TA URL: %s" % (TA_CONFIG["ta_url"]))  # type: ignore # noqa: F821, E501
         if Prefs["tubearchivist_api_key"]:  # type: ignore # noqa: F821
             TA_CONFIG["ta_api_key"] = Prefs[  # type: ignore # noqa: F821
@@ -930,7 +932,7 @@ def Update(metadata, media, lang, force):  # noqa: C901
                                                 vid_metadata["thumb_url"],
                                             ),
                                             headers={
-                                                "Authorization": "Token {}".format(
+                                                "Authorization": "Token {}".format(  # noqa: E501
                                                     TA_CONFIG["ta_api_key"]
                                                 )
                                             },
