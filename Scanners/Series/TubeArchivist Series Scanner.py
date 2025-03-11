@@ -58,10 +58,9 @@ TA_REGEXS = [
 def setup():
     global SetupDone
     if SetupDone:
-        return
+        return True
 
     else:
-
         global PLEX_ROOT
         PLEX_ROOT = os.path.abspath(
             os.path.join(
@@ -100,6 +99,7 @@ def setup():
             )
         )
         SetupDone = True
+        return True
 
 
 def read_url(url, data=None):
@@ -235,7 +235,7 @@ def filter_chars(in_string):
 def load_ta_config():
     global TA_CONFIG
     if TA_CONFIG:
-        return
+        return TA_CONFIG
     else:
         TA_CONFIG = get_ta_config()
 
@@ -347,7 +347,7 @@ def check_ta_version_in_response(response):
 
 def test_ta_connection():
     if not TA_CONFIG:
-        return
+        return False, []
     try:
         Log.info(
             "Attempting to connect to TubeArchivist at {} with provided token from `ta_config.json` file.".format(  # noqa: E501
@@ -357,7 +357,7 @@ def test_ta_connection():
         response = json.loads(
             read_url(
                 Request(
-                    "{}/api/ping".format(TA_CONFIG["ta_url"]),
+                    "{}/api/ping/".format(TA_CONFIG["ta_url"]),
                     headers={
                         "Authorization": "Token {}".format(
                             TA_CONFIG["ta_api_key"]
@@ -381,9 +381,12 @@ def test_ta_connection():
 
 def get_ta_metadata(id, mtype="video"):
     request_url = ""
-    request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    if TA_CONFIG["version"] < [0, 5, 0]:
+        request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    else:
+        request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     if not TA_CONFIG:
-        return
+        return None
     try:
         Log.info(
             "Attempting to connect to TubeArchivist to lookup YouTube {}: {}".format(  # noqa: E501
@@ -416,10 +419,10 @@ def get_ta_video_metadata(ytid):
     mtype = "video"
     if not TA_CONFIG:
         Log.error("No configurations in TA_CONFIG.")
-        return
+        return None
     if not ytid:
         Log.error("No {} ID present.".format(mtype))
-        return
+        return None
     try:
         vid_response = get_ta_metadata(ytid)
         Log.info(
@@ -480,10 +483,10 @@ def get_ta_channel_metadata(chid):
     mtype = "channel"
     if not TA_CONFIG:
         Log.error("No configurations in TA_CONFIG.")
-        return
+        return None
     if not chid:
         Log.error("No {} ID present.".format(mtype))
-        return
+        return None
     try:
         ch_response = get_ta_metadata(chid, mtype=mtype)
         Log.info(
