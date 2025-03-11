@@ -497,7 +497,7 @@ def get_ta_video_metadata(ytid):
             )
     except Exception as e:
         Log.error(
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
@@ -553,7 +553,7 @@ def get_ta_channel_metadata(chid):
             )
     except Exception as e:
         Log.error(
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
