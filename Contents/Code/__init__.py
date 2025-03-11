@@ -202,8 +202,9 @@ def read_url(url, data=None):
 
 
 def get_url(url):
+    url_string = ""
     try:
-        return url.get_full_url()
+        url_string = url.get_full_url()
     except Exception as e:
         Log.Error(  # type: ignore # noqa: F821
             "URL handler for '%s' does not have `.get_full_url()` function, Exception: '%s'"  # noqa: E501
@@ -212,7 +213,8 @@ def get_url(url):
         Log.Debug(  # type: ignore # noqa: F821
             "Using fallback method for URL response."
         )
-        return url
+        url_string = url
+    return url_string
 
 
 def read_file(localfile):
