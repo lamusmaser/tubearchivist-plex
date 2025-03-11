@@ -381,10 +381,12 @@ def test_ta_connection():
 
 def get_ta_metadata(id, mtype="video"):
     request_url = ""
-    if TA_CONFIG["version"] < [0, 5, 0]:
-        request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
-    else:
-        request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    # Currently, the API endpoint is identical. However, we should have this here for a future version in case the API changes.
+    # if TA_CONFIG["version"] < [0, 5, 0]:
+    #     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    # else:
+    #     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     if not TA_CONFIG:
         return None
     try:
@@ -495,26 +497,26 @@ def get_ta_channel_metadata(chid):
             )
         )
         if ch_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                ch_response["data"] = ch_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
-                ch_response["data"]["channel_name"],
-                ch_response["data"]["channel_id"],
+                ch_response["channel_name"],
+                ch_response["channel_id"],
             )
             if TA_CONFIG["version"] < [0, 3, 7]:
                 channel_refresh = datetime.datetime.strptime(
-                    ch_response["data"]["channel_last_refresh"], "%d %b, %Y"
+                    ch_response["channel_last_refresh"], "%d %b, %Y"
                 )
             else:
                 channel_refresh = datetime.datetime.strptime(
-                    ch_response["data"]["channel_last_refresh"], "%Y-%m-%d"
+                    ch_response["channel_last_refresh"], "%Y-%m-%d"
                 )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
-            metadata["description"] = ch_response["data"][
-                "channel_description"
-            ]
-            metadata["banner_url"] = ch_response["data"]["channel_banner_url"]
-            metadata["thumb_url"] = ch_response["data"]["channel_thumb_url"]
-            metadata["tvart_url"] = ch_response["data"]["channel_tvart_url"]
+            metadata["description"] = ch_response["channel_description"]
+            metadata["banner_url"] = ch_response["channel_banner_url"]
+            metadata["thumb_url"] = ch_response["channel_thumb_url"]
+            metadata["tvart_url"] = ch_response["channel_tvart_url"]
             return metadata
         else:
             Log.error(
