@@ -452,40 +452,38 @@ def get_ta_video_metadata(ytid):
             )
         )
         if vid_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                vid_response["data"] = vid_response
             metadata = {}
             if Prefs["show_channel_id"]:  # type: ignore # noqa: F821
                 metadata["show"] = "{} [{}]".format(
-                    vid_response["data"]["channel"]["channel_name"],
-                    vid_response["data"]["channel"]["channel_id"],
+                    vid_response["channel"]["channel_name"],
+                    vid_response["channel"]["channel_id"],
                 )
             else:
                 metadata["show"] = "{}".format(
-                    vid_response["data"]["channel"]["channel_name"]
+                    vid_response["channel"]["channel_name"]
                 )
-            metadata["ytid"] = vid_response["data"]["youtube_id"]
-            metadata["title"] = vid_response["data"]["title"]
+            metadata["ytid"] = vid_response["youtube_id"]
+            metadata["title"] = vid_response["title"]
             metadata["processed_date"] = Datetime.ParseDate(  # type: ignore # noqa: F821, E501
-                vid_response["data"]["published"]
+                vid_response["published"]
             )
             video_refresh = Datetime.ParseDate(  # type: ignore # noqa: F821
-                vid_response["data"]["vid_last_refresh"]
+                vid_response["vid_last_refresh"]
             )
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
             metadata["season"] = metadata["processed_date"].year
             metadata["episode"] = metadata["processed_date"].strftime("%Y%m%d")
-            metadata["description"] = vid_response["data"]["description"]
-            metadata["runtime"] = vid_response["data"]["player"][
-                "duration_str"
-            ]
-            metadata["thumb_url"] = vid_response["data"]["vid_thumb_url"]
-            metadata["type"] = vid_response["data"]["vid_type"]
+            metadata["description"] = vid_response["description"]
+            metadata["runtime"] = vid_response["player"]["duration_str"]
+            metadata["thumb_url"] = vid_response["vid_thumb_url"]
+            metadata["type"] = vid_response["vid_type"]
             metadata["has_subtitles"] = (
-                True if "subtitles" in vid_response["data"] else False
+                True if "subtitles" in vid_response else False
             )
             if metadata["has_subtitles"]:
-                metadata["subtitle_metadata"] = vid_response["data"][
-                    "subtitles"
-                ]
+                metadata["subtitle_metadata"] = vid_response["subtitles"]
             return metadata
         else:
             Log.Error(  # type: ignore # noqa: F821
@@ -516,27 +514,27 @@ def get_ta_channel_metadata(chid):
             )
         )
         if ch_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                ch_response["data"] = ch_response
             metadata = {}
             if Prefs["show_channel_id"]:  # type: ignore # noqa: F821
                 metadata["show"] = "{} [{}]".format(
-                    ch_response["data"]["channel_name"],
-                    ch_response["data"]["channel_id"],
+                    ch_response["channel_name"],
+                    ch_response["channel_id"],
                 )
             else:
-                metadata["show"] = "{}".format(
-                    ch_response["data"]["channel_name"]
-                )
+                metadata["show"] = "{}".format(ch_response["channel_name"])
             channel_refresh = Datetime.ParseDate(  # type: ignore # noqa: F821
-                ch_response["data"]["channel_last_refresh"]
+                ch_response["channel_last_refresh"]
             )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
             metadata["description"] = "{}\n\nYouTube ID: {}".format(
-                ch_response["data"]["channel_description"],
-                ch_response["data"]["channel_id"],
+                ch_response["channel_description"],
+                ch_response["channel_id"],
             )
-            metadata["banner_url"] = ch_response["data"]["channel_banner_url"]
-            metadata["thumb_url"] = ch_response["data"]["channel_thumb_url"]
-            metadata["tvart_url"] = ch_response["data"]["channel_tvart_url"]
+            metadata["banner_url"] = ch_response["channel_banner_url"]
+            metadata["thumb_url"] = ch_response["channel_thumb_url"]
+            metadata["tvart_url"] = ch_response["channel_tvart_url"]
             return metadata
         else:
             Log.Error(  # type: ignore # noqa: F821
