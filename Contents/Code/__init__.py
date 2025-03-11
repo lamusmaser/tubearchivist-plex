@@ -285,11 +285,11 @@ def get_ta_config():
     Log.Info(  # type: ignore # noqa: F821
         "Checking if there are any overriding configurations in local file..."
     )
-    return json.loads(
-        read_file(os.path.join(AGENT_LOCATION, CONFIG_NAME))
-        if os.path.isfile(os.path.join(AGENT_LOCATION, CONFIG_NAME))
-        else "{}"
-    )
+    config_response = "{}"
+    if os.path.isfile(os.path.join(AGENT_LOCATION, CONFIG_NAME)):
+        config_response = read_file(os.path.join(AGENT_LOCATION, CONFIG_NAME))
+    config_response = json.loads(config_response)
+    return config_response
 
 
 def test_ta_connection():
