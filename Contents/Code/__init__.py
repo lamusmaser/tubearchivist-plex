@@ -123,9 +123,34 @@ Make sure the path is unicode, if it is not, decode using OS filesystem's encodi
 
 
 def sanitize_path(p):
-    return (
-        p if isinstance(p, unicode) else p.decode(sys.getfilesystemencoding())  # type: ignore # noqa: F821, E501
-    )
+    sp = ""
+    if isinstance(p, unicode):  # type: ignore # noqa: F821
+        sp = p
+    else:
+        try:
+            sp = p.decode(sys.getfilesystemencoding())
+        except UnicodeDecodeError:
+            Log.Error(  # type: ignore # noqa: F821
+                "Unable to decode path '{}', using filesystem encoding of '{}'".format(  # noqa: E501
+                    p, sys.getfilesystemencoding()
+                )  # noqa: E501
+            )
+            Log.Debug(  # type: ignore # noqa: F821
+                "Trying again with 'UTF-8' encoding for path '{}'".format(p)
+            )
+            try:
+                sp = p.decode("utf-8", "ignore")
+            except Exception as e:
+                Log.Error(  # type: ignore # noqa: F821
+                    "Unable to decode path '{}' with 'UTF-8' encoding, Exception: '{}'".format(  # noqa: E501
+                        p, e
+                    )
+                )
+        except Exception as e:
+            Log.Error(  # type: ignore # noqa: F821
+                "Unable to decode path '{}', Exception: '{}'".format(p, e)
+            )
+    return sp
 
 
 #####################
