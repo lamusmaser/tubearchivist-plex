@@ -49,6 +49,7 @@ A list of potential default installation locations:
 1. Pull the [API Key](https://docs.tubearchivist.com/settings/application/#integrations) for TubeArchivist and have it ready for the configuration files.
 2. Ensure that Plex can see the TubeArchivist Media directory that you use to store the downloaded videos.
 3. Ensure that the system running Plex can communicate to TubeArchivist.
+4. If using a non-standard port (HTTP uses 80, HTTPS uses 443), including the TubeArchivist default port of 8000, that must be included with the `TA_URL` configurations.
 
 ## Download `.zip` File
 1. Download the Zip File: https://github.com/tubearchivist/tubearchivist-plex/archive/refs/heads/main.zip
@@ -61,7 +62,7 @@ A list of potential default installation locations:
 
 1. Inside the `TubeArchivist-Agent.bundle`, move the subdirectory `Scanners` into the `Plex Media Server` directory.
 2. Inside the `Scanners\Series` directory, rename or copy the `sample-ta_config.json` to `ta_config.json`.
-3. Update the configurations within the `ta_config.json` file to reflect your settings for connecting to the TubeArchivist instance and its [API Key](https://docs.tubearchivist.com/settings/#integrations).
+3. Update the configurations within the `ta_config.json` file to reflect your settings for connecting to the TubeArchivist instance and its [API Key](https://docs.tubearchivist.com/settings/#integrations). Note: If using a non-standard port (HTTP uses 80, HTTPS uses 443), including the TubeArchivist default port of 8000, that must be included with the `TA_URL` configurations.
 4. Change the ownership and permissions of both the Python script and configuration JSON file to allow access to the Plex user that is appropriate for your system. This should match most other files already in the `Plex Media Server` directory.
 5. After you have placed the Agent, you will restart the Plex Media Server service.
 
@@ -80,7 +81,7 @@ A list of potential default installation locations:
     * Scanner: `TubeArchivist Scanner`
     * Agent: `TubeArchivist Agent`
     * TubeArchivist API Key: Insert the API Key (this is the same that is used for the Scanner config file)
-    * TubeArchivist URL: The URL that Plex can access your TubeArchivist instance
+    * TubeArchivist URL: The URL that Plex can access your TubeArchivist instance. Note: If using a non-standard port (HTTP uses 80, HTTPS uses 443), including the TubeArchivist default port of 8000, that must be included with the `TA_URL` configurations.
 6. The Scanner should immediately start finding new videos and update as it sees them, but you can also run a `Scan Library Files` for the Library to initiate a check.
 7. The Agent should update the metadata after finding the new videos, but you can also run a `Refresh Metadata` on the Library, Channel, or individual video to initiate an update.
 
@@ -88,6 +89,7 @@ A list of potential default installation locations:
 If you are having problems with seeing the Scanner or Agent, confirm that the instructions are followed.
 If the Scanner and Agent are selected, but you are not seeing videos, then it could mean that the Scanner is having a problem. Check the Scanner Logs to get more information.
 If the Scanner and Agent are selected, but the channels or videos are not pulling in thumbnails, correct titles, or having other issues with the metadata, then it could mean that the Agent is having a problem. Check the Agent Logs to get more information.
+Reminder: If using a non-standard port (HTTP uses 80, HTTPS uses 443), including the TubeArchivist default port of 8000, that must be included with the `TA_URL` configurations.
 
 # Log Locations
 Scanner Log Location: `Plex Media Server/Logs/TubeArchivist Scanner`, default file is `_root_.scanner.log`
@@ -96,6 +98,11 @@ Agent Log Location: `Plex Media Server/Logs/PMS Plugin Logs/com.plexapp.agents.t
 
 # Issues
 If you are still having an issue, either open an Issue in GitHub or a Support Case on the Discord, specifying that it is related to the Plex integration.
+
+# User Scripts/References
+This is a list of useful user scripts created by other users like you to extend this project and its functionality. Make sure to check the respective repository links for detailed license information.
+
+Filesystem Monitor/Partial Library Updater Script by @samssausages: [samssausages/plex_scripts](https://github.com/samssausages/plex_scripts/tree/main)
 
 # Special Thanks and Reference
 This project is heavily influenced by the works of ZeroQI, JordyAlkema, and BeefTornado, as well as the Plex Media Server's official scanners and agents.

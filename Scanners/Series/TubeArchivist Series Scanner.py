@@ -58,10 +58,9 @@ TA_REGEXS = [
 def setup():
     global SetupDone
     if SetupDone:
-        return
+        return True
 
     else:
-
         global PLEX_ROOT
         PLEX_ROOT = os.path.abspath(
             os.path.join(
@@ -100,6 +99,7 @@ def setup():
             )
         )
         SetupDone = True
+        return True
 
 
 def read_url(url, data=None):
@@ -235,15 +235,16 @@ def filter_chars(in_string):
 def load_ta_config():
     global TA_CONFIG
     if TA_CONFIG:
-        return
+        return TA_CONFIG
     else:
         TA_CONFIG = get_ta_config()
 
 
-def get_ta_config():
+def read_ta_config():
     SCANNER_LOCATION = "Scanners/Series/"
     CONFIG_NAME = "ta_config.json"
     response = {}
+
     config_file = os.path.join(PLEX_ROOT, SCANNER_LOCATION, CONFIG_NAME)
     try:
         response = json.loads(
@@ -283,6 +284,12 @@ def get_ta_config():
                     config_file
                 )
             )
+    return response
+
+
+def get_ta_config():
+    response = {}
+    response = read_ta_config()
     for key in ["ta_url", "ta_api_key"]:
         if key not in response:
             Log.error("Configuration is missing key '{}'.".format(key))
@@ -291,6 +298,8 @@ def get_ta_config():
         and response["ta_url"].find("://") == -1
     ):
         response["ta_url"] = "http://" + response["ta_url"]
+    if response["ta_url"].endswith("/"):
+        response["ta_url"] = response["ta_url"][:-1]
     Log.debug("TA URL: %s" % (response["ta_url"]))
     return response
 
@@ -338,7 +347,7 @@ def check_ta_version_in_response(response):
 
 def test_ta_connection():
     if not TA_CONFIG:
-        return
+        return False, []
     try:
         Log.info(
             "Attempting to connect to TubeArchivist at {} with provided token from `ta_config.json` file.".format(  # noqa: E501
@@ -348,7 +357,7 @@ def test_ta_connection():
         response = json.loads(
             read_url(
                 Request(
-                    "{}/api/ping".format(TA_CONFIG["ta_url"]),
+                    "{}/api/ping/".format(TA_CONFIG["ta_url"]),
                     headers={
                         "Authorization": "Token {}".format(
                             TA_CONFIG["ta_api_key"]
@@ -372,9 +381,14 @@ def test_ta_connection():
 
 def get_ta_metadata(id, mtype="video"):
     request_url = ""
+    # Currently, the API endpoint is identical. However, we should have this here for a future version in case the API changes.  # noqa: E501
+    # if TA_CONFIG["version"] < [0, 5, 0]:
+    #     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
+    # else:
+    #     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     request_url = "{}/api/{}/{}/".format(TA_CONFIG["ta_url"], mtype, id)
     if not TA_CONFIG:
-        return
+        return None
     try:
         Log.info(
             "Attempting to connect to TubeArchivist to lookup YouTube {}: {}".format(  # noqa: E501
@@ -407,10 +421,10 @@ def get_ta_video_metadata(ytid):
     mtype = "video"
     if not TA_CONFIG:
         Log.error("No configurations in TA_CONFIG.")
-        return
+        return None
     if not ytid:
         Log.error("No {} ID present.".format(mtype))
-        return
+        return None
     try:
         vid_response = get_ta_metadata(ytid)
         Log.info(
@@ -419,40 +433,40 @@ def get_ta_video_metadata(ytid):
             )
         )
         if vid_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                vid_response["data"] = vid_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
-                vid_response["data"]["channel"]["channel_name"],
-                vid_response["data"]["channel"]["channel_id"],
+                vid_response["channel"]["channel_name"],
+                vid_response["channel"]["channel_id"],
             )
-            metadata["ytid"] = vid_response["data"]["youtube_id"]
-            metadata["title"] = vid_response["data"]["title"]
+            metadata["ytid"] = vid_response["youtube_id"]
+            metadata["title"] = vid_response["title"]
             if TA_CONFIG["version"] < [0, 3, 7]:
                 metadata["processed_date"] = datetime.datetime.strptime(
-                    vid_response["data"]["published"], "%d %b, %Y"
+                    vid_response["published"], "%d %b, %Y"
                 )
                 video_refresh = datetime.datetime.strptime(
-                    vid_response["data"]["vid_last_refresh"], "%d %b, %Y"
+                    vid_response["vid_last_refresh"], "%d %b, %Y"
                 )
             else:
                 metadata["processed_date"] = datetime.datetime.strptime(
-                    vid_response["data"]["published"], "%Y-%m-%d"
+                    vid_response["published"], "%Y-%m-%d"
                 )
                 video_refresh = datetime.datetime.strptime(
-                    vid_response["data"]["vid_last_refresh"], "%Y-%m-%d"
+                    vid_response["vid_last_refresh"], "%Y-%m-%d"
                 )
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
             metadata["season"] = metadata["processed_date"].year
             metadata["episode"] = metadata["processed_date"].strftime("%Y%m%d")
-            metadata["description"] = vid_response["data"]["description"]
-            metadata["thumb_url"] = vid_response["data"]["vid_thumb_url"]
-            metadata["type"] = vid_response["data"]["vid_type"]
+            metadata["description"] = vid_response["description"]
+            metadata["thumb_url"] = vid_response["vid_thumb_url"]
+            metadata["type"] = vid_response["vid_type"]
             metadata["has_subtitles"] = (
-                True if "subtitles" in vid_response["data"] else False
+                True if "subtitles" in vid_response else False
             )
             if metadata["has_subtitles"]:
-                metadata["subtitle_metadata"] = vid_response["data"][
-                    "subtitles"
-                ]
+                metadata["subtitle_metadata"] = vid_response["subtitles"]
             return metadata
         else:
             Log.error(
@@ -471,10 +485,10 @@ def get_ta_channel_metadata(chid):
     mtype = "channel"
     if not TA_CONFIG:
         Log.error("No configurations in TA_CONFIG.")
-        return
+        return None
     if not chid:
         Log.error("No {} ID present.".format(mtype))
-        return
+        return None
     try:
         ch_response = get_ta_metadata(chid, mtype=mtype)
         Log.info(
@@ -483,26 +497,26 @@ def get_ta_channel_metadata(chid):
             )
         )
         if ch_response:
+            if TA_CONFIG["version"] < [0, 5, 0]:
+                ch_response["data"] = ch_response
             metadata = {}
             metadata["show"] = "{} [{}]".format(
-                ch_response["data"]["channel_name"],
-                ch_response["data"]["channel_id"],
+                ch_response["channel_name"],
+                ch_response["channel_id"],
             )
             if TA_CONFIG["version"] < [0, 3, 7]:
                 channel_refresh = datetime.datetime.strptime(
-                    ch_response["data"]["channel_last_refresh"], "%d %b, %Y"
+                    ch_response["channel_last_refresh"], "%d %b, %Y"
                 )
             else:
                 channel_refresh = datetime.datetime.strptime(
-                    ch_response["data"]["channel_last_refresh"], "%Y-%m-%d"
+                    ch_response["channel_last_refresh"], "%Y-%m-%d"
                 )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
-            metadata["description"] = ch_response["data"][
-                "channel_description"
-            ]
-            metadata["banner_url"] = ch_response["data"]["channel_banner_url"]
-            metadata["thumb_url"] = ch_response["data"]["channel_thumb_url"]
-            metadata["tvart_url"] = ch_response["data"]["channel_tvart_url"]
+            metadata["description"] = ch_response["channel_description"]
+            metadata["banner_url"] = ch_response["channel_banner_url"]
+            metadata["thumb_url"] = ch_response["channel_thumb_url"]
+            metadata["tvart_url"] = ch_response["channel_tvart_url"]
             return metadata
         else:
             Log.error(
