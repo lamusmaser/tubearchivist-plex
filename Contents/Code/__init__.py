@@ -20,9 +20,9 @@ try:
 except ImportError:
     from ssl import PROTOCOL_SSLv23 as SSL_PROTOCOL  # Python <  2.7.13
 try:
-    from urllib.request import Request, urlopen  # Python >= 3.0
+    from urllib.request import HTTPError, Request, urlopen  # Python >= 3.0
 except ImportError:
-    from urllib2 import Request, urlopen  # Python == 2.x
+    from urllib2 import HTTPError, Request, urlopen  # Python == 2.x
 # try:
 #     from urllib.parse import quote
 # except ImportError:
@@ -326,7 +326,7 @@ def get_ta_config():
     return config_response
 
 
-def test_ta_connection():
+def test_ta_connection(try_legacy_api=False):
     if not TA_CONFIG:
         return
     try:
@@ -335,10 +335,13 @@ def test_ta_connection():
                 TA_CONFIG["ta_url"]
             )
         )
+        ping_url = "{}/api/ping/".format(TA_CONFIG["ta_url"])
+        if try_legacy_api:
+            ping_url = "{}/api/ping".format(TA_CONFIG["ta_url"])
         response = json.loads(
             read_url(
                 Request(
-                    "{}/api/ping/".format(TA_CONFIG["ta_url"]),
+                    ping_url,
                     headers={
                         "Authorization": "Token {}".format(
                             TA_CONFIG["ta_api_key"]
@@ -352,6 +355,16 @@ def test_ta_connection():
         ta_version = check_ta_version_in_response(response)
         if ta_ping == "pong":
             return True, ta_version
+    except HTTPError as e:
+        Log.Error(  # type: ignore # noqa: F821
+            "HTTP Error connecting to TubeArchivist with URL '%s', HTTPError: '%s'"  # noqa: E501
+            % (TA_CONFIG["ta_url"], e)
+        )
+        Log.Debug(  # type: ignore # noqa: F821
+            "Attempting with legacy API for ping response."
+        )
+        return test_ta_connection(try_legacy_api=True)
+
     except Exception as e:
         Log.Error(  # type: ignore # noqa: F821
             "Error connecting to TubeArchivist with URL '%s', Exception: '%s'"
