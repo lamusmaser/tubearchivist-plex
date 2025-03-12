@@ -381,6 +381,8 @@ def test_ta_connection(try_legacy_api=False):
             "HTTP Error connecting to TubeArchivist with URL '%s', HTTPError: '%s'"  # noqa: E501
             % (TA_CONFIG["ta_url"], e)
         )
+        if try_legacy_api:
+            return False, []
         Log.debug(  # type: ignore # noqa: F821
             "Attempting with legacy API for ping response."
         )
@@ -451,7 +453,7 @@ def get_ta_video_metadata(ytid):
                 Log.debug(
                     "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
                 )
-                vid_response["data"] = vid_response
+                vid_response = vid_response["data"]
             metadata = {}
             metadata["show"] = "{} [{}]".format(
                 vid_response["channel"]["channel_name"],
@@ -495,7 +497,7 @@ def get_ta_video_metadata(ytid):
             )
     except Exception as e:
         Log.error(
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
@@ -521,7 +523,7 @@ def get_ta_channel_metadata(chid):
                 Log.debug(
                     "Processing response with pre-v0.5.0 TA API response format."  # noqa: E501
                 )
-                ch_response["data"] = ch_response
+                ch_response = ch_response["data"]
             metadata = {}
             metadata["show"] = "{} [{}]".format(
                 ch_response["channel_name"],
@@ -551,7 +553,7 @@ def get_ta_channel_metadata(chid):
             )
     except Exception as e:
         Log.error(
-            "Error processing %s response from TubeArchivist at URL '%s', Exception: '%s'"  # noqa: E501
+            "Error processing %s response from TubeArchivist at location '%s', Exception: '%s'"  # noqa: E501
             % (mtype, TA_CONFIG["ta_url"], e)
         )
         raise e
@@ -652,13 +654,15 @@ def Scan(path, files, mediaList, subdirs):  # noqa: C901
                             )
                         )
                         episode_split = [
-                            str(episode[i : i + 2])  # noqa: E203
-                            for i in range(0, len(episode), 2)
+                            str(episode[x : x + 2])  # noqa: E203
+                            for x in range(0, len(episode), 2)
                         ]
-                        tv_show.released_at = "{}-{}-{}".format(
-                            episode_split[0],
-                            episode_split[1],
-                            episode_split[2],
+                        tv_show.released_at = str(
+                            "{}-{}-{}".format(
+                                episode_split[0],
+                                episode_split[1],
+                                episode_split[2],
+                            )
                         ).encode("UTF-8")
                         tv_show.parts.append(i)
                         Log.info(
