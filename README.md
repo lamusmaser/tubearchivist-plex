@@ -88,8 +88,11 @@ A list of potential default installation locations:
 # Troubleshooting
 If you are having problems with seeing the Scanner or Agent, confirm that the instructions are followed.
 If the Scanner and Agent are selected, but you are not seeing videos, then it could mean that the Scanner is having a problem. Check the Scanner Logs to get more information.
+
 If the Scanner and Agent are selected, but the channels or videos are not pulling in thumbnails, correct titles, or having other issues with the metadata, then it could mean that the Agent is having a problem. Check the Agent Logs to get more information.
 Reminder: If using a non-standard port (HTTP uses 80, HTTPS uses 443), including the TubeArchivist default port of 8000, that must be included with the `TA_URL` configurations.
+
+Local subtitles that are provided outside of the TubeArchivist context are not typically supported, but you can still access them via the [Local Assets configuration in the Agent Settings for Metadata Agents](https://support.plex.tv/articles/200241558-agents/).
 
 # Log Locations
 Scanner Log Location: `Plex Media Server/Logs/TubeArchivist Scanner`, default file is `_root_.scanner.log`
