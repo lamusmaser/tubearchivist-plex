@@ -105,7 +105,7 @@ def setup():
         Log.debug("\tPython argv: %s" % (sys.argv))
         Log.debug("\tPython platform: %s" % (sys.platform))
         Log.debug("\tPython prefix: %s" % (sys.prefix))
-        Log.debug("\tPython thread info: %s" % (sys.thread_info))
+        # Log.debug("\tPython thread info: %s" % (sys.thread_info))
         SetupDone = True
         return True
 
