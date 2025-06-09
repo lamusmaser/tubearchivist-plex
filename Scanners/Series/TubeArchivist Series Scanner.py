@@ -240,6 +240,27 @@ def filter_chars(in_string):
     return in_string
 
 
+def set_date_to_utc(date):
+    tsymbolplus = False
+    if "+" in date:
+        dt, tz = date.split("+")
+        tsymbolplus = True
+    else:
+        sd = date.split("-")
+        dt = "".join(sd[:-1])
+        tz = (
+            sd[-1] if len(sd) > 3 else "00:00"
+        )  # (Year, Month, Datetime, [timezone])  # noqa: E501
+    tz = datetime.datetime.strptime(tz, "%H:%M")
+    tztd = datetime.timedelta(hours=tz.hour, minutes=tz.minute)
+    date_out = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
+    if tsymbolplus:
+        date_out = date_out + tztd
+    else:
+        date_out = date_out - tztd
+    return date_out
+
+
 def load_ta_config():
     global TA_CONFIG
     if TA_CONFIG:
@@ -485,31 +506,11 @@ def get_ta_video_metadata(ytid):
                     vid_response["vid_last_refresh"], "%Y-%m-%d"
                 )
             else:
-                Log.debug("Published Date: %s" % (vid_response["published"]))
-                Log.debug(
-                    "Published Date (revised): %s"
-                    % ("".join(vid_response["published"].rsplit(":", 1)))
+                metadata["processed_date"] = set_date_to_utc(
+                    vid_response["published"]
                 )
-                Log.debug(
-                    "Published Date (without timezone)"
-                    % (
-                        datetime.datetime.strptime(
-                            "".join(vid_response["published"].rsplit(":", 1)),
-                            "%Y-%m-%dT%H:%M:%S",
-                        )
-                    )
-                )
-                metadata["processed_date"] = datetime.datetime.strptime(
-                    "".join(vid_response["published"].rsplit(":", 1)),
-                    "%Y-%m-%dT%H:%M:%S%z",
-                )
-                Log.debug(
-                    "Last Refresh Date: %s"
-                    % (vid_response["vid_last_refresh"])
-                )
-                video_refresh = datetime.datetime.strptime(
-                    "".join(vid_response["vid_last_refresh"].rsplit(":", 1)),
-                    "%Y-%m-%dT%H:%M:%S%z",
+                video_refresh = set_date_to_utc(
+                    vid_response["vid_last_refresh"]
                 )
             # With the additional metadata, we can be more specific with the season ordering for v0.2.0 # noqa: E501
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
@@ -576,11 +577,8 @@ def get_ta_channel_metadata(chid):
                     ch_response["channel_last_refresh"], "%Y-%m-%d"
                 )
             else:
-                channel_refresh = datetime.datetime.strptime(
-                    "".join(
-                        ch_response["channel_last_refresh"].rsplit(":", 1)
-                    ),
-                    "%Y-%m-%dT%H:%M:%S%z",
+                channel_refresh = set_date_to_utc(
+                    ch_response["channel_last_refresh"]
                 )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
             metadata["description"] = ch_response["channel_description"]
