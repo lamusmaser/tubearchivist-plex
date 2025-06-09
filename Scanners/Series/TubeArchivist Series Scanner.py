@@ -471,15 +471,24 @@ def get_ta_video_metadata(ytid):
                 video_refresh = datetime.datetime.strptime(
                     vid_response["vid_last_refresh"], "%d %b, %Y"
                 )
-            else:
+            elif TA_CONFIG["version"] < [0, 5, 3]:
                 metadata["processed_date"] = datetime.datetime.strptime(
                     vid_response["published"], "%Y-%m-%d"
                 )
                 video_refresh = datetime.datetime.strptime(
                     vid_response["vid_last_refresh"], "%Y-%m-%d"
                 )
+            else:
+                metadata["processed_date"] = datetime.datetime.strptime(
+                    vid_response["published"], "%Y-%m-%dT%H:%M:%S%z"
+                )
+                video_refresh = datetime.datetime.strptime(
+                    vid_response["vid_last_refresh"], "%Y-%m-%dT%H:%M:%S%z"
+                )
+            # With the additional metadata, we can be more specific with the season ordering for v0.2.0 # noqa: E501
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
             metadata["season"] = metadata["processed_date"].year
+            # With the additional metadata, we can be more specific with the season ordering for v0.2.0 # noqa: E501
             metadata["episode"] = metadata["processed_date"].strftime("%Y%m%d")
             metadata["description"] = vid_response["description"]
             metadata["thumb_url"] = vid_response["vid_thumb_url"]
@@ -536,9 +545,13 @@ def get_ta_channel_metadata(chid):
                 channel_refresh = datetime.datetime.strptime(
                     ch_response["channel_last_refresh"], "%d %b, %Y"
                 )
-            else:
+            elif TA_CONFIG["version"] < [0, 5, 3]:
                 channel_refresh = datetime.datetime.strptime(
                     ch_response["channel_last_refresh"], "%Y-%m-%d"
+                )
+            else:
+                channel_refresh = datetime.datetime.strptime(
+                    ch_response["channel_last_refresh"], "%Y-%m-%dT%H:%M:%S%z"
                 )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
             metadata["description"] = ch_response["channel_description"]
