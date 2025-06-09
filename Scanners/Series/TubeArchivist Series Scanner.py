@@ -480,6 +480,19 @@ def get_ta_video_metadata(ytid):
                 )
             else:
                 Log.debug("Published Date: %s" % (vid_response["published"]))
+                Log.debug(
+                    "Published Date (revised): %s"
+                    % ("".join(vid_response["published"].rsplit(":", 1)))
+                )
+                Log.debug(
+                    "Published Date (without timezone)"
+                    % (
+                        datetime.datetime.strptime(
+                            "".join(vid_response["published"].rsplit(":", 1)),
+                            "%Y-%m-%dT%H:%M:%S",
+                        )
+                    )
+                )
                 metadata["processed_date"] = datetime.datetime.strptime(
                     "".join(vid_response["published"].rsplit(":", 1)),
                     "%Y-%m-%dT%H:%M:%S%z",
