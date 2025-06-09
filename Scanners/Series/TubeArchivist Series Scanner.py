@@ -102,7 +102,7 @@ def setup():
         )
         Log.debug("Plex Python environment: ")
         Log.debug("\tPython version: %s" % (sys.version))
-        Log.debug("\tPython argv: %s" % (sys.argv))
+        # Log.debug("\tPython argv: %s" % (sys.argv))
         Log.debug("\tPython platform: %s" % (sys.platform))
         Log.debug("\tPython prefix: %s" % (sys.prefix))
         # Log.debug("\tPython thread info: %s" % (sys.thread_info))
