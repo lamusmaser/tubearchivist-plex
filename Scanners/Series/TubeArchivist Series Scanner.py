@@ -100,6 +100,7 @@ def setup():
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")
             )
         )
+        Log.debug()
         SetupDone = True
         return True
 
@@ -480,10 +481,12 @@ def get_ta_video_metadata(ytid):
                 )
             else:
                 metadata["processed_date"] = datetime.datetime.strptime(
-                    vid_response["published"], "%Y-%m-%dT%H:%M:%S%z"
+                    "".join(vid_response["published"].rsplit(":", 1)),
+                    "%Y-%m-%dT%H:%M:%S%z",
                 )
                 video_refresh = datetime.datetime.strptime(
-                    vid_response["vid_last_refresh"], "%Y-%m-%dT%H:%M:%S%z"
+                    "".join(vid_response["vid_last_refresh"].rsplit(":", 1)),
+                    "%Y-%m-%dT%H:%M:%S%z",
                 )
             # With the additional metadata, we can be more specific with the season ordering for v0.2.0 # noqa: E501
             metadata["refresh_date"] = video_refresh.strftime("%Y%m%d")
@@ -551,7 +554,10 @@ def get_ta_channel_metadata(chid):
                 )
             else:
                 channel_refresh = datetime.datetime.strptime(
-                    ch_response["channel_last_refresh"], "%Y-%m-%dT%H:%M:%S%z"
+                    "".join(
+                        ch_response["channel_last_refresh"].rsplit(":", 1)
+                    ),
+                    "%Y-%m-%dT%H:%M:%S%z",
                 )
             metadata["refresh_date"] = channel_refresh.strftime("%Y%m%d")
             metadata["description"] = ch_response["channel_description"]
