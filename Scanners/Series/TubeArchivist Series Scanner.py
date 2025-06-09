@@ -479,9 +479,14 @@ def get_ta_video_metadata(ytid):
                     vid_response["vid_last_refresh"], "%Y-%m-%d"
                 )
             else:
+                Log.debug("Published Date: %s" % (vid_response["published"]))
                 metadata["processed_date"] = datetime.datetime.strptime(
                     "".join(vid_response["published"].rsplit(":", 1)),
                     "%Y-%m-%dT%H:%M:%S%z",
+                )
+                Log.debug(
+                    "Last Refresh Date: %s"
+                    % (vid_response["vid_last_refresh"])
                 )
                 video_refresh = datetime.datetime.strptime(
                     "".join(vid_response["vid_last_refresh"].rsplit(":", 1)),
